@@ -1,5 +1,8 @@
 import sqlite3, os, requests, datetime
 from datetime import date
+from dotenv import load_dotenv
+load_dotenv()
+
 
 CURRENCIES = ["EUR", "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
 
@@ -169,24 +172,42 @@ class MovementDAOsqlite:
         conn.close()
         return lista    
  
+class CoinAPIHandler:
+    def __init__(self):
+        self.coin_api_key = os.environ.get('FLASK_Coin_Api_key')
 
-def get_all_movements():
-    try:
-        connection = sqlite3.connect("data/movements.db")
-        cur = connection.cursor()
+    def get_exchange_rate(self, criptomoneda_origen, criptomoneda_salida):
+        url = f"https://rest.coinapi.io/v1/exchangerate/{criptomoneda_origen}/{criptomoneda_salida}?apikey={self.coin_api_key}"
+        try:
+            response = requests.get(url)
+            data = response.json()
+            if response.status_code == 200:
+                return data['rate']
+            else:
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Error al obtener los datos: {str(e)}")
+            return None
 
-        query = '''
-            SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
-                   cantidad_origen, criptomoneda_salida, cantidad_salida
-            FROM movements
-        '''
-        cur.execute(query)
-        movements = cur.fetchall()
+    def process_transaction(self, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
+        exchange_rate = self.get_exchange_rate(criptomoneda_origen, criptomoneda_salida)
+        if exchange_rate is None:
+            return False, "No se pudo obtener el tipo de cambio."
 
-        connection.close()
+        if tipo_operacion == "Compra":
+            # Lógica para manejar una compra (actualizar la base de datos, calcular balances, etc.)
+            # Aquí puedes implementar la lógica para realizar la compra y guardarla en la base de datos.
+            return True, "Compra realizada exitosamente."
 
-        return movements
+        elif tipo_operacion == "Venta":
+            # Lógica para manejar una venta (actualizar la base de datos, calcular balances, etc.)
+            # Aquí puedes implementar la lógica para realizar la venta y guardarla en la base de datos.
+            return True, "Venta realizada exitosamente."
 
-    except Exception as e:
-        print(f"Error al obtener los movimientos: {str(e)}")
-        return None
+        elif tipo_operacion == "Intercambio":
+            # Lógica para manejar un intercambio (actualizar la base de datos, calcular balances, etc.)
+            # Aquí puedes implementar la lógica para realizar el intercambio y guardarla en la base de datos.
+            return True, "Intercambio realizado exitosamente."
+
+        else:
+            return False, "Operación no válida. Por favor, seleccione 'Compra', 'Venta' o 'Intercambio'."

@@ -47,6 +47,7 @@ class PurchaseForm(FlaskForm):
                                         ("MATIC", "MATIC")
                                       ],
                                       validators=[InputRequired()])
-    cantidad_salida = DecimalField("Cantidad de Salida:", places=4, validators=[InputRequired()])
-
+    
+    cantidad_salida = DecimalField("Cantidad de Salida:", default=0 ,places=4)
+    obtener_tipo_cambio = SubmitField("Consultar") 
     ejecutar = SubmitField("Ejecutar")
