@@ -1,0 +1,280 @@
+/* Estilos para la navegación en todas las páginas */
+nav {
+    background-color: #4285f4;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.nav-button {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Estilos para el hover de los botones de navegación */
+.nav-button:hover {
+    background-color: #1976d2;
+}
+
+/* Estilos comunes para todas las páginas */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 20px; /* Aumentamos el padding para agregar espacio entre el contenido y los bordes de la página */
+}
+
+h1 {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #4285f4;
+    color: #fff;
+    margin: 0;
+}
+
+/* Estilos para el texto principal */
+p {
+    text-align: center;
+    color: #555;
+}
+
+/* Estilos para los formularios en todas las páginas */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #444;
+    text-align: center;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+/* Estilos para el hover del formulario */
+select:hover,
+input:hover {
+    border-color: #888;
+}
+
+/* Estilos para el foco del formulario */
+select:focus,
+input:focus {
+    outline: none;
+    border-color: #1976d2;
+}
+
+/* Estilos para los botones en todas las páginas */
+button {
+    background-color: #4285f4;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilos para el hover del botón */
+button:hover {
+    background-color: #1976d2;
+}
+
+/* Estilos específicos para la página "purchase" */
+.purchase-page {
+    text-align: center;
+}
+
+.purchase-page form {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.purchase-page .currency-fields {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.purchase-page .currency-fields > div {
+    margin: 10px; /* Ajustar los márgenes */
+}
+
+.purchase-page .currency-fields > label {
+    display: block;
+    text-align: center;
+    margin-right: 5px; /* Espacio entre el label y el select */
+}
+
+.purchase-page button {
+    width: 100%;
+    font-size: 20px;
+    margin-top: 24px;
+}
+
+/* Estilos específicos para la página "status" */
+.status-page {
+    text-align: center;
+}
+
+.status-page h2 {
+    margin-top: 20px;
+    font-size: 24px;
+}
+
+.status-page table {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Estilos para la tabla en todas las páginas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Estilos para el encabezado de la tabla */
+th {
+    background-color: #4285f4;
+    color: #fff;
+}
+
+/* Estilos para el header en todas las páginas */
+header {
+    background-color: #4285f4;
+    text-align: center;
+    padding: 10px 0;
+    color: #fff;
+}
+
+/* Estilos para el texto dentro del header */
+header h1 {
+    margin: 0;
+}
+
+/* Estilos para el footer en todas las páginas */
+footer {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: center;
+    color: #333;
+}
+
+/* Estilos para el texto dentro del footer */
+footer p {
+    margin: 0;
+}
+
+.small-button {
+    padding: 5px 10px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    background-color: #4285f4;
+    cursor: pointer;
+    align-items:center;
+}
+
+.small-button:hover {
+    background-color: #1976d2;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-contenido {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* Estilo para el enlace de cerrar el modal */
+.modal-contenido .modal-cerrar {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+
+/* Estilo para el enlace de cerrar el modal */
+.modal-contenido .modal-cerrar {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.overlay { 
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+}
+.overlay:target{
+    visibility: visible;
+    opacity: 1;
+}
+
+#popupBody{
+    width: 46%;
+    padding: 2%;
+    border-radius: 15px;
+    box-shadow: 0 0 5px #CCC;
+    background: #FFF;
+    position: relative;
+    margin: 20% auto;
+    transition: all 5s ease-in-out;
+}
+#cerrar{
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #F00;
+    transition: all 200ms;
+
+
+}

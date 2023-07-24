@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" sizes="16x16 32x32 48x48" type="image/png" href="/static/images/myicon.png" />
+    <link rel="stylesheet" href="/static/pico.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>{% block title %}Mi Cartera{% endblock %}</title>
+</head>
+<body class="{% block body_class %}index-page{% endblock %}">
+    <h1>{% block page_title %}Mi Cartera{% endblock %}</h1>
+
+    <div>
+        <nav>
+            <a href="/" class="nav-button">Resumen</a>
+            <a href="/purchase" class="nav-button">Operar</a>
+            <a href="/status" class="nav-button">Estado</a>
+        </nav>
+    </div>
+
+    {% block page_content %}
+    {% endblock %}
+
+    <footer>
+        <p>&copy; 2023 Enrique Ramos Fuster - Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

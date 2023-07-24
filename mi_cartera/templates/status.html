@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Cartera - Estado{% endblock %}
+
+{% block page_content %}
+<h2>Estado de la Cartera</h2>
+
+<div class="balance">
+    <h3>Balance: {{ balance }}</h3>
+</div>
+
+<div class="criptomonedas">
+    <h3>Criptomonedas en la Cartera:</h3>
+    <ul>
+        {% for criptomoneda in criptomonedas %}
+        <li>{{ criptomoneda }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="valor-total">
+    <h3>Valor Total de la Inversión: {{ valor_total }} €</h3>
+</div>
+
+<div class="movimientos">
+    <!-- Aquí puedes agregar más contenido si deseas mostrar los movimientos o transacciones -->
+</div>
+{% endblock %}

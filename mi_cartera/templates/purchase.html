@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Mi Cartera - Comprar/Vender/Intercambiar{% endblock %}
+
+{% block page_content %}
+<form action="/purchase" method="post">
+    {{ form.csrf_token }}
+    <div>
+    {{ form.tipo_operacion.label }}
+    {{ form.tipo_operacion }}
+    </div>
+    <div>
+    {{ form.criptomoneda_origen.label }}
+    {{ form.criptomoneda_origen }}
+    </div>
+    <div>
+    {{ form.cantidad_origen.label }}
+    {{ form.cantidad_origen }}
+    </div>
+    <div>
+    {{ form.criptomoneda_salida.label }}
+    {{ form.criptomoneda_salida }}
+    </div>
+    <div>
+    {{ form.cantidad_salida.label }}
+    {{ form.cantidad_salida }}
+    </div>
+    <div>
+    {{ form.ejecutar }}
+    </div>
+</form>
+{% endblock %}
