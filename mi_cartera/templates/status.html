@@ -1,28 +1,49 @@
 {% extends 'base.html' %}
 
-{% block title %}Mi Cartera - Estado{% endblock %}
+{% block title %}Mi Cartera - Estado de Compras{% endblock %}
 
 {% block page_content %}
-<h2>Estado de la Cartera</h2>
-
-<div class="balance">
-    <h3>Balance: {{ balance }}</h3>
-</div>
-
-<div class="criptomonedas">
-    <h3>Criptomonedas en la Cartera:</h3>
-    <ul>
-        {% for criptomoneda in criptomonedas %}
-        <li>{{ criptomoneda }}</li>
+<div style="display: flex;">
+    
+    <div style="flex: 1; padding: 10px;">
+{% if purchases %}
+    <h2>Estado de Compras</h2>
+    <ol>
+        {% for purchase in purchases %}
+        <li>
+            <strong>Fecha de operación:</strong> {{ purchase.fecha_actual }}<br>
+            <strong>Hora de operación:</strong> {{ purchase.hora_actual }}<br>
+            <strong>Tipo de operación:</strong> {{ purchase.tipo_operacion }}<br>
+            <strong>Moneda origen:</strong> {{ purchase.criptomoneda_origen }}<br>
+            <strong>Cantidad origen:</strong> {{ purchase.cantidad_origen }}<br>
+            <strong>Moneda salida:</strong> {{ purchase.criptomoneda_salida }}<br>
+            <strong>Cantidad salida:</strong> {{ purchase.cantidad_salida }}<br>
+        </li>
         {% endfor %}
-    </ul>
-</div>
-
-<div class="valor-total">
-    <h3>Valor Total de la Inversión: {{ valor_total }} €</h3>
-</div>
-
-<div class="movimientos">
-    <!-- Aquí puedes agregar más contenido si deseas mostrar los movimientos o transacciones -->
+    </ol>
+{% else %}
+    <p>No hay compras registradas.</p>
+{% endif %}
+    </div>
+    <div style="flex: 1; padding: 10px;">
+{% if sales %}
+    <h2>Estado de Ventas</h2>
+    <ol>
+        {% for sale in sales %}
+        <li>
+            <strong>Fecha de operación:</strong> {{ sale.fecha_actual }}<br>
+            <strong>Hora de operación:</strong> {{ sale.hora_actual }}<br>
+            <strong>Tipo de operación:</strong> {{ sale.tipo_operacion }}<br>
+            <strong>Moneda origen:</strong> {{ sale.criptomoneda_origen }}<br>
+            <strong>Cantidad origen:</strong> {{ sale.cantidad_origen }}<br>
+            <strong>Moneda salida:</strong> {{ sale.criptomoneda_salida }}<br>
+            <strong>Cantidad salida:</strong> {{ sale.cantidad_salida }}<br>
+        </li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No hay ventas registradas.</p>
+{% endif %}
+    </div>
 </div>
 {% endblock %}

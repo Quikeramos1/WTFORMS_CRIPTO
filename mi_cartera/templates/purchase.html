@@ -1,34 +1,47 @@
 {% extends 'base.html' %}
+
 {% block title %}Mi Cartera - Comprar/Vender/Intercambiar{% endblock %}
 
 {% block page_content %}
-<form action="/purchase" method="post">
+<form action="/purchase" method="post" class="purchase-form">
     {{ form.csrf_token }}
-    <div>
-    {{ form.tipo_operacion.label }}
-    {{ form.tipo_operacion }}
+    <!-- Contenedor para el campo "tipo_operacion" -->
+    <div class="type-operation-field">
+        {{ form.tipo_operacion.label }}
+        {{ form.tipo_operacion }}
     </div>
-    <div>
-    {{ form.criptomoneda_origen.label }}
-    {{ form.criptomoneda_origen }}
+    
+    <!-- Contenedor para campos de criptomoneda -->
+    <div class="crypto-container">
+        <div class="crypto-field">
+            {{ form.criptomoneda_origen.label }}
+            {{ form.criptomoneda_origen }}
+        </div>
+        <div class="crypto-field">
+            {{ form.criptomoneda_salida.label }}
+            {{ form.criptomoneda_salida }}
+        </div>
     </div>
-    <div>
-    {{ form.cantidad_origen.label }}
-    {{ form.cantidad_origen }}
+    
+    <!-- Contenedor para campos de cantidad -->
+    <div class="amount-container">
+        <div class="amount-field">
+            {{ form.cantidad_origen.label }}
+            {{ form.cantidad_origen(class="small-input") }}
+        </div>
+        <div class="amount-field">
+            {{ form.cantidad_salida.label }}
+            {{ form.cantidad_salida(value=form.cantidad_salida.dada, readonly="readonly", class="small-input") }}
+        </div>
     </div>
-    <div>
-    {{ form.criptomoneda_salida.label }}
-    {{ form.criptomoneda_salida }}
+    
+    <!-- Contenedor para el botón "calcular" -->
+    <div class="calculate-button-container">
+        {{ form.obtener_tipo_cambio(class="btn btn-primary") }}
     </div>
+    
     <div>
-    {{ form.obtener_tipo_cambio(class="btn btn-primary") }}
-    </div>
-    <div>
-    {{ form.cantidad_salida.label }}
-    {{ form.cantidad_salida(value=form.cantidad_salida.dada) }}
-    </div>
-    <div>
-    {{ form.ejecutar(class="btn btn-success") }}
+        {{ form.ejecutar(class="btn btn-success") }}
     </div>
 </form>
 {% endblock %}

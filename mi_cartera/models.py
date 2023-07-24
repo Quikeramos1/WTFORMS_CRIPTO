@@ -1,26 +1,12 @@
-import sqlite3, os, requests, datetime
-from datetime import date
+import sqlite3, os, requests
+from datetime import date, datetime
 from dotenv import load_dotenv
 load_dotenv()
 
 
 CURRENCIES = ["EUR", "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
 
-def get_rate(criptomoneda_origen, criptomoneda_salida):
-    coin_api_key = os.environ.get('FLASK_Coin_Api_key')
-    url =f"https://rest.coinapi.io/v1/exchangerate/{criptomoneda_origen}/{criptomoneda_salida}?apikey={coin_api_key}"
-    try:
-        response = requests.get(url)
-        data = response.json()
-        if response.status_code == 200:
-            return data['rate']
-            
-        
-        else:
-            return False, data["error"]
-    except requests.exceptions.RequestException as e:
-        print(f"Error al obtenerlos datos: {str(e)}")
-        return False, str(e)
+
 
 def crea_db_si_no_existe():
     try:
@@ -132,29 +118,7 @@ class MovementDAOsqlite:
         conn.commit()
         conn.close()
 
-    def get(self, id):
-        query = """
-        SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
-               cantidad_origen, criptomoneda_salida, cantidad_salida, id
-          FROM movements
-         WHERE id = ?;
-        """
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-        cur.execute(query, (id,))
-        res = cur.fetchone()
-        conn.close()
-        if res:
-            # Suponiendo que tu modelo de datos es la clase Movement
-            fecha_actual_str, hora_actual_str, tipo_operacion, criptomoneda_origen, \
-                cantidad_origen, criptomoneda_salida, cantidad_salida, id = res
-
-            fecha_actual = datetime.strptime(fecha_actual_str, '%Y-%m-%d').date()
-            hora_actual = datetime.strptime(hora_actual_str, '%H:%M:%S').time()
-
-            return Movement(fecha_actual, tipo_operacion, criptomoneda_origen,
-                            cantidad_origen, criptomoneda_salida, cantidad_salida, id)
-
+    
     def get_all(self):
         query = """
         SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
@@ -171,7 +135,72 @@ class MovementDAOsqlite:
 
         conn.close()
         return lista    
- 
+    
+    def get_all_purchases(self):
+        query = """
+        SELECT id, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
+            cantidad_origen, criptomoneda_salida, cantidad_salida
+        FROM movements
+        WHERE tipo_operacion = 'Compra';
+        """
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(query)
+        purchases = []
+
+        for res in cur.fetchall():
+            id, fecha_actual_str, hora_actual_str, tipo_operacion, criptomoneda_origen, \
+            cantidad_origen, criptomoneda_salida, cantidad_salida = res
+
+            fecha_actual = datetime.strptime(fecha_actual_str, '%Y-%m-%d').date()
+            hora_actual = datetime.strptime(hora_actual_str, '%H:%M:%S').time()
+
+            purchases.append({
+                "id": id,
+                "fecha_actual": fecha_actual,
+                "hora_actual": hora_actual,
+                "tipo_operacion": tipo_operacion,
+                "criptomoneda_origen": criptomoneda_origen,
+                "cantidad_origen": cantidad_origen,
+                "criptomoneda_salida": criptomoneda_salida,
+                "cantidad_salida": cantidad_salida
+            })
+
+        conn.close()
+        return purchases
+
+    def get_all_sales(self):
+        query = """
+        SELECT id, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
+            cantidad_origen, criptomoneda_salida, cantidad_salida
+        FROM movements
+        WHERE tipo_operacion = 'Venta';
+        """
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(query)
+        sales = []
+
+        for res in cur.fetchall():
+            id, fecha_actual_str, hora_actual_str, tipo_operacion, criptomoneda_origen, \
+            cantidad_origen, criptomoneda_salida, cantidad_salida = res
+
+            fecha_actual = datetime.strptime(fecha_actual_str, '%Y-%m-%d').date()
+            hora_actual = datetime.strptime(hora_actual_str, '%H:%M:%S').time()
+
+            sales.append({
+                "id": id,
+                "fecha_actual": fecha_actual,
+                "hora_actual": hora_actual,
+                "tipo_operacion": tipo_operacion,
+                "criptomoneda_origen": criptomoneda_origen,
+                "cantidad_origen": cantidad_origen,
+                "criptomoneda_salida": criptomoneda_salida,
+                "cantidad_salida": cantidad_salida
+            })
+
+        conn.close()
+        return sales
 class CoinAPIHandler:
     def __init__(self):
         self.coin_api_key = os.environ.get('FLASK_Coin_Api_key')

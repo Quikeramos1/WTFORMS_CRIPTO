@@ -77,8 +77,6 @@ def purchase():
 
 @app.route("/status")
 def status():
-    criptomonedas = ["EUR", "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
-    balance = 1000  # Aquí puedes calcular el balance real
-    valor_total = 2000  # Aquí puedes calcular el valor total de inversión
-
-    return render_template("status.html", criptomonedas=criptomonedas, balance=balance, valor_total=valor_total)
+    purchases = dao.get_all_purchases()
+    sales = dao.get_all_sales()
+    return render_template("status.html", purchases=purchases, sales=sales)
