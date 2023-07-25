@@ -75,54 +75,11 @@ input:focus {
 }
 
 
-
-/* Estilos específicos para la página "purchase" */
-.purchase-page {
-    text-align: center;
-}
-
-.purchase-page form {
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.purchase-page .currency-fields {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.purchase-page .currency-fields > div {
-    margin: 10px; /* Ajustar los márgenes */
-}
-
-.purchase-page .currency-fields > label {
-    display: block;
-    text-align: center;
-    margin-right: 5px; /* Espacio entre el label y el select */
-}
-
-
-/* Estilos específicos para la página "status" */
-.status-page {
-    text-align: center;
-}
-
-.status-page h2 {
-    margin-top: 20px;
-    font-size: 24px;
-}
-
-.status-page table {
-    max-width: 800px;
-    margin: 20px auto;
-}
-
 /* Estilos para la tabla en todas las páginas */
 table {
-    width: 100%;
+    
+    margin: 0 auto; /* Centra la tabla en la página */
+    width: 100%; /* Hace que la tabla ocupe todo el ancho disponible */
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -131,6 +88,10 @@ th, td {
     padding: 16px;
     text-align: center;
     border-bottom: 1px solid #ccc;
+}
+th {
+    background-color: #4286f4dc;
+    color: #fff;
 }
 
 tr:nth-child(even) {
@@ -148,26 +109,30 @@ th {
 }
 
 /* Estilos para el header en todas las páginas */
+
 header {
     background-color: #4286f4dc;
     text-align: center;
     padding: 10px 0;
     color: #fff;
+    max-width: 1000px; /* Ancho máximo deseado para el header */
+    margin: 0 auto; /* Centra el header en la página */
 }
 
 /* Estilos para el texto dentro del header */
 header h1 {
     margin: 0;
+    
 }
 
-/* Estilos para el footer en todas las páginas */
+
 footer {
     background-color: #4286f4dc;
     padding: 10px;
     text-align: center;
     color: #333;
+    margin: 0 auto; /* Centra el footer en la página */
 }
-
 /* Estilos para el texto dentro del footer */
 footer p {
     margin: 0;
@@ -188,13 +153,6 @@ footer p {
     background-color: #1976d2;
 }
 
-
-
-
-/* Estilos para el formulario de compra */
-.purchase-form {
-    margin-bottom: 20px;
-}
 
 
 /* Estilos para el campo "tipo_operacion" */
@@ -238,7 +196,8 @@ footer p {
     margin-top: 10px; /* Espaciado hacia arriba */
 }
 
-.calculate-button {
+
+.btn_calcular {
     width: 100px; /* Tamaño del botón */
     height: 40px;
     background-color: #4286f4dc;
@@ -250,6 +209,8 @@ footer p {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+   
+    
 }
 
 /* Estilos para el icono dentro del botón "calcular" */
@@ -257,7 +218,7 @@ footer p {
     font-size: 20px;
 }
 
-.btn btn-success {
+.btn_ejcutar {
     background-color: #4286f4dc;
     color: #fff;
     border: none;
@@ -267,4 +228,227 @@ footer p {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+   
+    
+}/* Estilos para la navegación en todas las páginas */
+nav {
+    background-color: #4286f4dc;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.nav-button {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Estilos para el hover de los botones de navegación */
+.nav-button:hover {
+    background-color: #1976d2;
+}
+
+/* Estilos comunes para todas las páginas */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 20px; /* Aumentamos el padding para agregar espacio entre el contenido y los bordes de la página */
+}
+
+h1 {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #4286f4dc;
+    color: #fff;
+    margin: 0;
+}
+
+/* Estilos para el texto principal */
+p {
+    text-align: center;
+    color: #555;
+}
+
+/* Estilos para los formularios en todas las páginas */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #444;
+    text-align: center;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+/* Estilos para el hover del formulario */
+select:hover,
+input:hover {
+    border-color: #888;
+}
+
+/* Estilos para el foco del formulario */
+select:focus,
+input:focus {
+    outline: none;
+    border-color: #1976d2;
+}
+
+/* Estilos específicos para la página "purchase" */
+.purchase-page {
+    text-align: center;
+}
+
+.purchase-page form {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.purchase-page .currency-fields {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.purchase-page .currency-fields > div {
+    margin: 10px; /* Ajustar los márgenes */
+}
+
+.purchase-page .currency-fields > label {
+    display: block;
+    text-align: center;
+    margin-right: 5px; /* Espacio entre el label y el select */
+}
+
+/* Estilos específicos para la página "status" */
+.status-page {
+    text-align: center;
+}
+
+.status-page h2 {
+    margin-top: 20px;
+    font-size: 24px;
+}
+
+.status-page table {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Estilos para la tabla en todas las páginas */
+table {
+    
+    margin: 0 auto; /* Centra la tabla en la página */
+    width: 100%; /* Hace que la tabla ocupe todo el ancho disponible */
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Estilos para el encabezado de la tabla */
+th {
+    background-color: #4286f4dc;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Estilos para el header en todas las páginas */
+header {
+    background-color: #4286f4dc;
+    text-align: center;
+    padding: 10px 0;
+    color: #fff;
+    max-width: 1000px; /* Ancho máximo deseado para el header */
+    margin: 0 auto; /* Centra el header en la página */
+}
+
+/* Estilos para el texto dentro del header */
+header h1 {
+    margin: 0;
+}
+
+/* Estilos para el footer en todas las páginas */
+footer {
+    background-color: #4286f4dc;
+    padding: 10px;
+    text-align: center;
+    color: #333;
+    
+    margin: 0 auto; /* Centra el footer en la página */
+}
+
+/* Estilos para el texto dentro del footer */
+footer p {
+    margin: 0;
+    text-align: center;
+    color: #ffffff;
+}
+
+.small-button {
+    padding: 5px 10px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    background-color: #4286f4dc;
+    cursor: pointer;
+    align-items: center;
+}
+
+.small-button:hover {
+    background-color: #1976d2;
+}
+
+/* Estilos para el campo "tipo_operacion" */
+.type-operation-field {
+    margin-bottom: 10px; /* Espaciado hacia abajo */
+}
+
+/* Estilos para el contenedor de campos de criptomoneda */
+.crypto-container {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+/* Estilos para los campos de criptomoneda */
+.crypto-field {
+    flex: 1;
+    margin-right: 10px;
+}
+
+  /* Estilos específicos para la página "status.html" */
+.status-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.status-container h6 {
+    margin-right: 10px;
+    margin-top: 0;
 }

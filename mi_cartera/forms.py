@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DecimalField, SubmitField
 from wtforms.validators import InputRequired
-from wtforms.fields import DateField, TimeField
+from wtforms.fields import DateField, TimeField, FloatField
 from datetime import datetime 
 
 
@@ -31,7 +31,7 @@ class PurchaseForm(FlaskForm):
                                         ("MATIC", "MATIC")
                                       ],
                                       validators=[InputRequired()])
-    cantidad_origen = DecimalField("Cantidad de Origen:", places=4, validators=[InputRequired()])
+    cantidad_origen = DecimalField("Cantidad de Origen:", validators=[InputRequired()])
     criptomoneda_salida = SelectField("To:", 
                                       choices=[
                                         ("", "-- Seleccionar Moneda --"),
@@ -48,6 +48,9 @@ class PurchaseForm(FlaskForm):
                                       ],
                                       validators=[InputRequired()])
     
-    cantidad_salida = DecimalField("Cantidad de Salida:", default=0 ,places=4)
+    cantidad_salida = FloatField("Cantidad de Salida",
+                                 render_kw={"placeholder":"Presiona el botón 'Consultar' para obtener la cantidad de salida"},
+                                   validators=[InputRequired()])
+
     obtener_tipo_cambio = SubmitField("Consultar") 
     ejecutar = SubmitField("Ejecutar")

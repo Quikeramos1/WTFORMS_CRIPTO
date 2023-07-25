@@ -3,31 +3,35 @@
 {% block title %}Mi Cartera - Registro de movimientos{% endblock %}
 
 {% block page_content %}
-{% if the_movements %}
-<table>
-    <tr>
-        <th>Fecha de operación</th>
-        <th>Hora de operación</th>
-        <th>Tipo operacion</th>
-        <th>Moneda origen</th>
-        <th>Cantidad origen</th>
-        <th>Moneda salida</th>
-        <th>Cantidad salida</th>
-    </tr>
-    {% for movement in the_movements %}
+<body>
+    
+    {% if the_movements %}
+    <table>
+        <tr>
+            <th>Fecha de operación</th>
+            <th>Hora de operación</th>
+            <th>Tipo operacion</th>
+            <th>Moneda origen</th>
+            <th>Cantidad origen</th>
+            <th>Moneda salida</th>
+            <th>Cantidad salida</th>
+        </tr>
+        {% for movement in the_movements %}
 
-    <tr>
-        <td>{{ movement.fecha_actual }}</td>
-        <td>{{ movement.hora_actual }}</td>
-        <td>{{ movement.tipo_operacion }}</td>
-        <td>{{ movement.criptomoneda_origen }}</td>
-        <td>{{ movement.cantidad_origen }}</td>
-        <td>{{ movement.criptomoneda_salida }}</td>
-        <td>{{ movement.cantidad_salida }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>SIN MOVIMIENTOS</p>
-{% endif %}
+        <tr>
+            <td>{{ movement.fecha_actual }}</td>
+            <td>{{ movement.hora_actual }}</td>
+            <td>{{ movement.tipo_operacion }}</td>
+            <td>{{ movement.criptomoneda_origen }}</td>
+            <td>{{ movement.cantidad_origen }}</td>
+            <td>{{ movement.criptomoneda_salida }}</td>
+            <td>{{ movement.cantidad_salida }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>SIN MOVIMIENTOS</p>
+    {% endif %}
+
+</body>
 {% endblock %}
