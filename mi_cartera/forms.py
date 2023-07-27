@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, DecimalField, SubmitField
 from wtforms.validators import InputRequired, DataRequired
 from wtforms.fields import DateField, TimeField, FloatField
-from datetime import datetime 
+
 
 
 class PurchaseForm(FlaskForm):

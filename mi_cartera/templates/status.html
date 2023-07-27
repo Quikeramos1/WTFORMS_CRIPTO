@@ -14,7 +14,9 @@
         </tr>
         {% for criptomoneda, diferencia in estado_wallet.items() %}
         <tr>
-            <td><img src="{{ url_for('static', filename='icons/' ~ criptomoneda ~ '.png') }}" alt="{{ criptomoneda }}" width="30" height="30"></td>
+            <td><img src="{{ url_for('static', 
+                filename='images/cryptoico/' + iconos_criptomonedas[criptomoneda]) }}"
+                 alt="{{ criptomoneda }} icono" width="30" height="30"></td>
             <td>{{ criptomoneda }}</td>
             <td>{{ diferencia }}</td>
             <td>{{ valor_euros_wallet.get(criptomoneda, 0) }}</td>

@@ -22,7 +22,7 @@ def get_tipo_vista():
 @app.route("/", methods=["POST", "GET"])
 def index():
     tipo_vista = get_tipo_vista()
-    form = Views()  # Agregar esta línea para crear el formulario
+    form = Views()  
     
     try:
         if tipo_vista == "Venta":
@@ -71,7 +71,6 @@ def purchase():
             return render_template("purchase.html", form=form)
         
         
-
         if "obtener_tipo_cambio" in request.form: 
 
             movimiento = Movement(fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen,
@@ -114,8 +113,6 @@ def purchase():
                     elif tipo_operacion == "Venta":
                         cantidad_origen = -cantidad_origen
 
-
-                
                 success, message = coin_api_handler.process_transaction(tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida)
 
                 if success:

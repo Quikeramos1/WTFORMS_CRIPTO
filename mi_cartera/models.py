@@ -1,7 +1,6 @@
 import sqlite3, os, requests
-from datetime import date, datetime
 from dotenv import load_dotenv
-from flask import flash, redirect
+from flask import flash
 load_dotenv()
 
 #lo uso en la funcion get_all_coins y lo dejo accesible para añadir o quitar en el futuro
@@ -30,8 +29,6 @@ def crea_db_si_no_existe():
             return False    
     else:
         return True 
-
-
 
 class Movement:
     def __init__(self, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
@@ -82,17 +79,13 @@ class Movement:
     def __repr__(self):
         return f"Movement: {self._date}- {self.hora_actual} - {self.tipo_operacion} - {self.criptomoneda_origen} - {self.cantidad_origen} - {self.criptomoneda_salida} - {self.cantidad_salida}"
 
-    
-
-
-
 class MovementDAOsqlite:
     def __init__(self, db_path):
         self.path = db_path
         self.coin_api_handler = CoinAPIHandler()
      
 
-    def insert(self, movement):#almaceno movimientos con esta funcion
+    def insert(self, movement):#almaceno operaciones con exito con esta funcion
         query = """
         INSERT INTO movements
                (fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
@@ -114,9 +107,9 @@ class MovementDAOsqlite:
                                 movement.cantidad_salida))
             conn.commit()
             conn.close()
-            return None  # No se produjo ningún error, retorna None indicando éxito
+            return None 
         except sqlite3.Error as e:
-            # Algo salió mal, captura el error y retorna el mensaje de error para mostrar al usuario
+
             error_msg = f"Error al insertar el movimiento en la base de datos: {str(e)}"
             return error_msg
     
@@ -240,21 +233,20 @@ class MovementDAOsqlite:
             cur = conn.cursor()
             cur.execute(query)
 
-            # Obtener los resultados de la consulta
+    
             resultados = cur.fetchall()
 
-            # Crear una lista para almacenar las criptomonedas de salida y sus totales de cantidad_salida
+          
             intercambio_salida_list = []
 
-            # Procesar los resultados y almacenar las criptomonedas de salida y sus totales de cantidad_salida
+  
             for row in resultados:
                 criptomoneda_salida = row[0]
                 total_cantidad_salida = row[1]
 
-                # Agregar una tupla (criptomoneda_salida, total_cantidad_salida) a la lista
+                
                 intercambio_salida_list.append((criptomoneda_salida, total_cantidad_salida))
 
-            # Cerrar cursor y conexión a la base de datos
             cur.close()
             conn.close()
 
@@ -268,7 +260,6 @@ class MovementDAOsqlite:
             intercambio_salida = self.intercambio_salida()
             total_por_criptomoneda_salida = self.total_criptomoneda_por_compra()
 
-            # Combinar los resultados en un solo diccionario
             criptomonedas_ganadas = {}
             for criptomoneda, cantidad_ganada in intercambio_salida:
                 criptomonedas_ganadas[criptomoneda] = cantidad_ganada
@@ -298,20 +289,20 @@ class MovementDAOsqlite:
             cur = conn.cursor()
             cur.execute(query)
 
-            # Obtener los resultados de la consulta
+           
             resultados = cur.fetchall()
 
-            # Crear un diccionario para almacenar los totales por criptomoneda_salida
+         
             total_por_criptomoneda_origen = {}
 
-            # Procesar los resultados y almacenar los totales por criptomoneda_salida
+           
             for row in resultados:
                 criptomoneda_origen = row[0]
                 total_cantidad_origen = row[1]
 
                 total_por_criptomoneda_origen[criptomoneda_origen] = total_cantidad_origen
 
-            # Cerrar cursor y conexión a la base de datos
+            
             cur.close()
             conn.close()
 
@@ -321,7 +312,7 @@ class MovementDAOsqlite:
             return None  
 
     def intercambio_origen(self):
-        #aqui busco controlar todas las cryptomonedas perdidas por intercamboo y sus cantidades
+        #aqui busco controlar todas las cryptomonedas perdidas por intercambio y sus cantidades
         try:
             query = """
             SELECT criptomoneda_origen, SUM(cantidad_origen) as total_cantidad_origen
@@ -333,21 +324,20 @@ class MovementDAOsqlite:
             cur = conn.cursor()
             cur.execute(query)
 
-            # Obtener los resultados de la consulta
+          
             resultados = cur.fetchall()
 
-            # Crear un diccionario para almacenar los totales por criptomoneda_origen
             intercambio_origen = {}
 
-            # Procesar los resultados y almacenar los totales por criptomoneda_origen
+
             for row in resultados:
                 criptomoneda_origen = row[0]
                 total_cantidad_origen = row[1]
 
-                # Asignar el total_cantidad_origen al diccionario intercambio_origen
+                
                 intercambio_origen[criptomoneda_origen] = total_cantidad_origen
 
-            # Cerrar cursor y conexión a la base de datos
+            
             cur.close()
             conn.close()
 
@@ -362,7 +352,7 @@ class MovementDAOsqlite:
             intercambio_origen = self.intercambio_origen()
             total_por_criptomoneda_origen = self.total_criptomoneda_por_venta()
 
-            # Combinar los resultados en un solo diccionario
+            
             criptomonedas_perdidas = {}
             for criptomoneda, cantidad_perdida in intercambio_origen.items():
                 criptomonedas_perdidas[criptomoneda] = cantidad_perdida
@@ -408,7 +398,6 @@ class MovementDAOsqlite:
         coin_api_handler = CoinAPIHandler()
         valor_en_euros_dic = {}
 
-        # Try to get all exchange rates from CoinAPI using get_all_coins()
         exchange_rates_to_eur = coin_api_handler.get_all_coins()
 
         if exchange_rates_to_eur is not None:
@@ -420,7 +409,7 @@ class MovementDAOsqlite:
                 else:
                     flash(f"No se pudo obtener el tipo de cambio para {criptomoneda}")
         else:
-            # si falla la llamda anterior a get_all_coins, utilozo esta como respaldo
+            # si falla la llamda anterior a get_all_coins, utilizo esta como respaldo
             for criptomoneda, cantidad in estado_wallet.items():
                 exchange_rate = coin_api_handler.get_exchange_rate(criptomoneda, 'EUR')
                 if exchange_rate is not None:
@@ -430,7 +419,6 @@ class MovementDAOsqlite:
                     flash(f"No se pudo obtener el tipo de cambio para {criptomoneda}")
 
         return valor_en_euros_dic
-
 
 class Valida_transaccion:
     def __init__(self, dao, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
@@ -486,9 +474,7 @@ class CoinAPIHandler:
         except requests.exceptions.RequestException as e:
             print(f'Error en la solicitud: {str(e)}')
             return None
-        #de aqui arriba ya obtengo el diccionario completo, ahora quiero crear otro diccionario con las claves/valor que me interesa
-        #para poder llamar a esta funcion desde las demas y poder asi, ahorrar en consultas a la API
-
+        
     def get_exchange_rate(self, criptomoneda_origen, criptomoneda_salida):
         url = f"https://rest.coinapi.io/v1/exchangerate/{criptomoneda_origen}/{criptomoneda_salida}?apikey={self.coin_api_key}"
         try:
@@ -519,20 +505,25 @@ class CoinAPIHandler:
         elif tipo_operacion == "Intercambio":
             return True, "Intercambio realizado exitosamente."
 
-    def obtener_icono_criptomoneda(self,criptomoneda, size=64):
+    def obtener_icono_criptomoneda(self, criptomoneda):
         
-        url = f"https://rest.coinapi.io/v1/assets/icons/{size}/{criptomoneda}?apikey={self.coin_api_key}"
-        
-        headers = {'X-CoinAPI-Key': self.coin_api_key}
-
-        try:
-            response = requests.get(url, headers=headers)
-
-            if response.status_code == 200:
-                return response.content
-            else:
-                print(f"Error al obtener el icono de {criptomoneda}: {response.status_code}")
-                return None
-        except requests.exceptions.RequestException as e:
-            print(f"Error al obtener el icono de {criptomoneda}: {str(e)}")
-            return None
+        if criptomoneda == 'BTC':
+            return 'BTC.png'
+        elif criptomoneda == 'ETH':
+            return 'ETH.png'
+        elif criptomoneda == 'BNB':
+            return 'BNB.png'
+        elif criptomoneda == 'ADA':
+            return 'ADA.png'
+        elif criptomoneda == 'DOT':
+            return 'DOT.png'
+        elif criptomoneda == 'USDT':
+            return 'USDT.png'
+        elif criptomoneda == 'XRP':
+            return 'XRP.png'
+        elif criptomoneda == 'SOL':
+            return 'SOL.png'
+        elif criptomoneda == 'MATIC':
+            return 'MATIC.png'
+        else:
+            return 'default.png'  
