@@ -3,8 +3,16 @@
 {% block title %}Mi Cartera - Registro de movimientos{% endblock %}
 
 {% block page_content %}
+
 <body>
-    
+    <form action="/" method="post" class="tipo_vista-form">
+        {{ form.csrf_token }}
+    <div>
+        {{ form.tipo_vista.label }}
+        {{ form.tipo_vista }}
+        {{ form.aceptar }}
+    </div>
+    </form>
     {% if the_movements %}
     <table>
         <tr>

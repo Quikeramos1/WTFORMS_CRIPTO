@@ -1,18 +1,22 @@
 import sqlite3, os, requests
 from datetime import date, datetime
 from dotenv import load_dotenv
+from flask import flash, redirect
 load_dotenv()
 
-
-CURRENCIES = ["EUR", "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
+#lo uso en la funcion get_all_coins y lo dejo accesible para añadir o quitar en el futuro
+CURRENCIES = [ "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
 
 
 
 def crea_db_si_no_existe():
-    try:
-        if not os.path.exists('db_path'):
-            conn = sqlite3.connect('db_path')
+    db_path = os.environ.get('FLASK_PATH_SQLITE')
+
+    if not os.path.exists(db_path):
+        try:
+            conn = sqlite3.connect(db_path)
             cur = conn.cursor()
+
 
             with open('data/create.sql', 'r') as create_file:
                 create_query = create_file.read()
@@ -21,8 +25,12 @@ def crea_db_si_no_existe():
 
             conn.commit()
             conn.close()
-    except Exception as e:
-        print(f"Error al crear la base de datos: {str(e)}")        
+        except Exception as e:
+            print(f"Error al crear la base de datos: {str(e)}")    
+            return False    
+    else:
+        return True 
+
 
 
 class Movement:
@@ -52,21 +60,23 @@ class Movement:
         }
 
     def validate(self):
-        errors = []
+        errores = []
     
         if self.cantidad_origen <= 0:
-            errors.append("Debe introducir una cantidad positiva.")  
+            errores.append("Debe introducir una cantidad positiva.")  
         if self.tipo_operacion == "Intercambio" and self.criptomoneda_origen == "EUR":
-            errors.append("Solo puede realizar intercambios entre cryptomonedas.") 
+            errores.append("Solo puede realizar intercambios entre cryptomonedas.") 
         if self.tipo_operacion == "Intercambio" and self.criptomoneda_salida == "EUR":
-            errors.append("Solo puede realizar intercambios entre cryptomonedas.")    
+            errores.append("Solo puede realizar intercambios entre cryptomonedas.")    
         if self.tipo_operacion == "Compra" and self.criptomoneda_salida == "EUR":
-            errors.append("No puedes comprar Euros. ")
+            errores.append("No puedes comprar Euros. ")
         if self.tipo_operacion == "Venta" and self.criptomoneda_origen == "EUR":
-            errors.append("La moneda 'EUR' no puede ser vendida.")
+            errores.append("La moneda 'EUR' no puede ser vendida.")
+        if self.tipo_operacion == "Compra" and self.criptomoneda_origen != "EUR":
+            errores.append("Solo puedes realizar compras con Euros")
 
         
-        return errors
+        return errores
         
 
     def __repr__(self):
@@ -79,21 +89,8 @@ class Movement:
 class MovementDAOsqlite:
     def __init__(self, db_path):
         self.path = db_path
-
-        query = """
-        CREATE TABLE IF NOT EXISTS movements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fecha_actual TEXT NOT NULL,
-            hora_actual TEXT NOT NULL,
-            tipo_operacion TEXT NOT NULL,
-            criptomoneda_origen TEXT NOT NULL,
-            cantidad_origen REAL NOT NULL,
-            criptomoneda_salida TEXT NOT NULL,
-            cantidad_salida REAL
-        );
-        """
-        
-        
+        self.coin_api_handler = CoinAPIHandler()
+     
 
     def insert(self, movement):#almaceno movimientos con esta funcion
         query = """
@@ -123,130 +120,81 @@ class MovementDAOsqlite:
             error_msg = f"Error al insertar el movimiento en la base de datos: {str(e)}"
             return error_msg
     
-    def get_all(self):#obtengo todos los movimientos para mostrar en index.html
-        query = """
-        SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
-               cantidad_origen, criptomoneda_salida, cantidad_salida
-          FROM movements
-         ORDER by fecha_actual;
-        """
+    def get_all(self, tipo_operacion=None):#Devuelve listado de todos los movimientos
+        if tipo_operacion is None:
+            query = """
+            SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
+                   cantidad_origen, criptomoneda_salida, cantidad_salida
+            FROM movements
+            ORDER by fecha_actual;
+            """
+        else:
+            query = """
+            SELECT fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
+                   cantidad_origen, criptomoneda_salida, cantidad_salida
+            FROM movements
+            WHERE tipo_operacion = ?;
+            """
+
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
-        cur.execute(query)
+
+        if tipo_operacion is None:
+            cur.execute(query)
+        else:
+            cur.execute(query, (tipo_operacion,))
+
         res = cur.fetchall()
 
         lista = [Movement(*reg) for reg in res]
 
         conn.close()
-        return lista    
+        return lista
     
     def get_all_purchases(self): #obtengo listado de todas las compras (cripto + importe)
-        query = """
-        SELECT id, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
-            cantidad_origen, criptomoneda_salida, cantidad_salida
-        FROM movements
-        WHERE tipo_operacion = 'Compra';
-        """
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-        cur.execute(query)
-        purchases = []
-
-        for res in cur.fetchall():
-            id, fecha_actual_str, hora_actual_str, tipo_operacion, criptomoneda_origen, \
-            cantidad_origen, criptomoneda_salida, cantidad_salida = res
-
-            fecha_actual = datetime.strptime(fecha_actual_str, '%Y-%m-%d').date()
-            hora_actual = datetime.strptime(hora_actual_str, '%H:%M:%S').time()
-
-            purchases.append({
-                "id": id,
-                "fecha_actual": fecha_actual,
-                "hora_actual": hora_actual,
-                "tipo_operacion": tipo_operacion,
-                "criptomoneda_origen": criptomoneda_origen,
-                "cantidad_origen": cantidad_origen,
-                "criptomoneda_salida": criptomoneda_salida,
-                "cantidad_salida": cantidad_salida
-            })
-
-        conn.close()
-        return purchases
+        return self.get_all("Compra")
 
     def get_all_sales(self): #obtengo listado de todas las ventas (cripto + importe)
-        query = """
-        SELECT id, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen,
-            cantidad_origen, criptomoneda_salida, cantidad_salida
-        FROM movements
-        WHERE tipo_operacion = 'Venta';
-        """
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-        cur.execute(query)
-        sales = []
+        return self.get_all("Venta")
 
-        for res in cur.fetchall():
-            id, fecha_actual_str, hora_actual_str, tipo_operacion, criptomoneda_origen, \
-            cantidad_origen, criptomoneda_salida, cantidad_salida = res
+    def get_all_trading(self):#obtengo listado de todos los intercambios
+        return self.get_all("Intercambio") 
 
-            fecha_actual = datetime.strptime(fecha_actual_str, '%Y-%m-%d').date()
-            hora_actual = datetime.strptime(hora_actual_str, '%H:%M:%S').time()
+    def get_total_por_operacion(self, tipo_operacion):
+            try:
+                if tipo_operacion not in ("Compra", "Venta", "Intercambio"):
+                    raise ValueError("Tipo de operación no válido")
 
-            sales.append({
-                "id": id,
-                "fecha_actual": fecha_actual,
-                "hora_actual": hora_actual,
-                "tipo_operacion": tipo_operacion,
-                "criptomoneda_origen": criptomoneda_origen,
-                "cantidad_origen": cantidad_origen,
-                "criptomoneda_salida": criptomoneda_salida,
-                "cantidad_salida": cantidad_salida
-            })
+                query = f"""
+                SELECT SUM(cantidad_origen) AS total
+                FROM movements
+                WHERE tipo_operacion = '{tipo_operacion}';
+                """ if tipo_operacion != "Venta" else """
+                SELECT SUM(cantidad_salida) AS total
+                FROM movements
+                WHERE tipo_operacion = 'Venta';
+                """
+
+                conn = sqlite3.connect(self.path)
+                cur = conn.cursor()
+                cur.execute(query)
+                resultado = cur.fetchone()
+                total = resultado[0] if resultado[0] is not None else 0
+
+                cur.close()
+                conn.close()
+
+                return total
+            except sqlite3.Error as e:
+                print("Error al acceder a la base de datos:", e)
+                return 0   
 
     def total_invertido(self):#Calculo el importe total en € que el invertido
-        try:
-            query = """
-            SELECT SUM(cantidad_origen)
-            FROM movements
-            WHERE tipo_operacion = 'Compra';
-            """
-            conn = sqlite3.connect(self.path)
-            cur = conn.cursor()
-            cur.execute(query)
-           
-            resultado = cur.fetchone()
-            total_compras = resultado[0] if resultado[0] is not None else 0
-
-            cur.close()
-            conn.close()
-
-            return total_compras
-        except sqlite3.Error as e:
-            print("Error al acceder a la base de datos:", e)
-            return 0
+        return self.get_total_por_operacion("Compra")
 
     def total_vendido(self):#Calculo el importe total en € que he vendido
-        try:
-            query = """
-            SELECT SUM(cantidad_salida)
-            FROM movements
-            WHERE tipo_operacion = 'Venta';
-            """
-            conn = sqlite3.connect(self.path)
-            cur = conn.cursor()
-            cur.execute(query)
-            # Obtener el resultado de la suma
-            resultado = cur.fetchone()
-            total_ventas = resultado[0] if resultado[0] is not None else 0
-
-            # Cerrar cursor y conexión a la base de datos
-            cur.close()
-            conn.close()
-
-            return total_ventas
-        except sqlite3.Error as e:
-            print("Error al acceder a la base de datos:", e)
-            return 0
+        return self.get_total_por_operacion("Venta")
+    
     
     def total_criptomoneda_por_compra(self):
         #aqui busco calcular todas las cryptomonedas compradas y su cantidad
@@ -456,6 +404,34 @@ class MovementDAOsqlite:
             print("Error al calcular la diferencia de criptomonedas perdidas y ganadas:", e)
             return None
         
+    def calcular_valor_euros_wallet(self, estado_wallet):
+        coin_api_handler = CoinAPIHandler()
+        valor_en_euros_dic = {}
+
+        # Try to get all exchange rates from CoinAPI using get_all_coins()
+        exchange_rates_to_eur = coin_api_handler.get_all_coins()
+
+        if exchange_rates_to_eur is not None:
+            for criptomoneda, cantidad in estado_wallet.items():
+                if criptomoneda in exchange_rates_to_eur:
+                    exchange_rate = exchange_rates_to_eur[criptomoneda]
+                    valor_en_euros = cantidad / exchange_rate
+                    valor_en_euros_dic[criptomoneda] = valor_en_euros
+                else:
+                    flash(f"No se pudo obtener el tipo de cambio para {criptomoneda}")
+        else:
+            # si falla la llamda anterior a get_all_coins, utilozo esta como respaldo
+            for criptomoneda, cantidad in estado_wallet.items():
+                exchange_rate = coin_api_handler.get_exchange_rate(criptomoneda, 'EUR')
+                if exchange_rate is not None:
+                    valor_en_euros = cantidad * exchange_rate
+                    valor_en_euros_dic[criptomoneda] = valor_en_euros
+                else:
+                    flash(f"No se pudo obtener el tipo de cambio para {criptomoneda}")
+
+        return valor_en_euros_dic
+
+
 class Valida_transaccion:
     def __init__(self, dao, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
         self.dao = dao
@@ -471,27 +447,47 @@ class Valida_transaccion:
         errores = []
         if self.tipo_operacion == "Venta" and self.criptomoneda_salida != "EUR":
             errores.append("Sólo puedes vender por Euros.")
-        if self.tipo_operacion == "Venta":
+        if self.tipo_operacion == "Venta" or self.tipo_operacion == "Intercambio":
             criptomonedas_perdidas_ganadas = self.dao.diferencia_criptomonedas_perdidas_ganadas()
             if self.criptomoneda_origen not in criptomonedas_perdidas_ganadas:
-                errores.append("No dispones de esta Moneda y por lo tanto no puede ser vendida.")
+                errores.append("No dispones de esta Moneda y por lo tanto no puede ser vendida o Intercambiada.")
             else:
                 cantidad_disponible = criptomonedas_perdidas_ganadas[self.criptomoneda_origen]
                 if self.cantidad_origen > cantidad_disponible:
                     errores.append("No dispones de suficientes fondos, introduce una cantidad menor.")
-        if self.tipo_operacion == "Intercambio":
-            criptomonedas_perdidas_ganadas = self.dao.diferencia_criptomonedas_perdidas_ganadas()
-            if self.criptomoneda_origen not in criptomonedas_perdidas_ganadas:
-                errores.append("No dispones de esta Moneda y por lo tanto no puede ser Intercambiada.")
-            else:
-                cantidad_disponible = criptomonedas_perdidas_ganadas[self.criptomoneda_origen]
-                if self.cantidad_origen > cantidad_disponible:
-                    errores.append("No dispones de suficientes fondos, introduce una cantidad menor.")
+        
         return errores
         
 class CoinAPIHandler:
     def __init__(self):
         self.coin_api_key = os.environ.get('FLASK_Coin_Api_key')
+
+
+    def get_all_coins(self):
+        url = f"https://rest.coinapi.io/v1/exchangerate/EUR?apikey={self.coin_api_key}"
+
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                if "rates" in data:
+                    required_coins = CURRENCIES
+                    exchange_rates_to_eur = {coin: None for coin in required_coins}
+
+                    for rate_data in data["rates"]:
+                        symbol = rate_data.get("asset_id_quote")
+                        if symbol in exchange_rates_to_eur:
+                            exchange_rates_to_eur[symbol] = rate_data.get("rate")
+
+                    return exchange_rates_to_eur
+            else:
+                print(f'Error en la solicitud: {response.status_code}')
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f'Error en la solicitud: {str(e)}')
+            return None
+        #de aqui arriba ya obtengo el diccionario completo, ahora quiero crear otro diccionario con las claves/valor que me interesa
+        #para poder llamar a esta funcion desde las demas y poder asi, ahorrar en consultas a la API
 
     def get_exchange_rate(self, criptomoneda_origen, criptomoneda_salida):
         url = f"https://rest.coinapi.io/v1/exchangerate/{criptomoneda_origen}/{criptomoneda_salida}?apikey={self.coin_api_key}"
@@ -515,12 +511,28 @@ class CoinAPIHandler:
             return False, "Ha habido un error al procesar la operación."
 
         if tipo_operacion == "Compra":
-             return True, "Compra realizada exitosamente."
+                return True, "Compra realizada exitosamente."
 
         elif tipo_operacion == "Venta":
-             return True, "Venta realizada exitosamente."
+                return True, "Venta realizada exitosamente."
 
         elif tipo_operacion == "Intercambio":
             return True, "Intercambio realizado exitosamente."
 
+    def obtener_icono_criptomoneda(self,criptomoneda, size=64):
         
+        url = f"https://rest.coinapi.io/v1/assets/icons/{size}/{criptomoneda}?apikey={self.coin_api_key}"
+        
+        headers = {'X-CoinAPI-Key': self.coin_api_key}
+
+        try:
+            response = requests.get(url, headers=headers)
+
+            if response.status_code == 200:
+                return response.content
+            else:
+                print(f"Error al obtener el icono de {criptomoneda}: {response.status_code}")
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Error al obtener el icono de {criptomoneda}: {str(e)}")
+            return None

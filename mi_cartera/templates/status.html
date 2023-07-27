@@ -7,27 +7,35 @@
 
     <table>
         <tr>
+            <th></th>
             <th>Moneda</th>
             <th>Cantidad</th>
             <th>Valor en Euros</th>
         </tr>
         {% for criptomoneda, diferencia in estado_wallet.items() %}
         <tr>
+            <td><img src="{{ url_for('static', filename='icons/' ~ criptomoneda ~ '.png') }}" alt="{{ criptomoneda }}" width="30" height="30"></td>
             <td>{{ criptomoneda }}</td>
             <td>{{ diferencia }}</td>
-            <td>{{ diferencia }}</td>
+            <td>{{ valor_euros_wallet.get(criptomoneda, 0) }}</td>
         </tr>
         {% endfor %}
     </table>
     
     <div class="status-container">
-        
-        <h6>Precio de compra:</h6>
-        <p>{{ precio_de_compra }}</p>
-        
-        
+        <div>
+            <h6>Valor actual:</h6>
+            <p>{{ valor_actual }}</p><p>€</p>
+        </div>
+        <div>
+            <h6>Precio de compra:</h6>
+            <p>{{ precio_de_compra }}</p><p>€</p>
+        </div>
+        <div>
+            <h6>Resultado de la inversión:</h6>
+            <p class="{% if resultado_inversion >= 0 %}positive{% else %}negative{% endif %}">{{ resultado_inversion }}</p><p>€</p>
+        </div>
     </div>
-   
 
 </body>
 

@@ -14,5 +14,7 @@ Este proyecto es una aplicación web que te permite realizar operaciones de comp
     pip install -r requirements.txt
 
 
+
+
 ### Variables de entorno
 Utiliza el .env_template para crear el env debidamente informado

@@ -22,13 +22,14 @@
 
     {% with msgs = get_flashed_messages() %}
         {% if msgs %}
-        <div class="container" id="msg-error">
-            {% for msg in msgs%}
-            <p>{{msg}}</p>
-            {% endfor %}
-        </div>
+            <div class="container" id="msg-error">
+                {% for msg in msgs%}
+                <p class="error">{{msg}}</p>
+                {% endfor %}
+            </div>  
         {% endif  %}
-    {% endwith %}
+    {% endwith %}    
+            
 
     {% block page_content %}
     {% endblock %}

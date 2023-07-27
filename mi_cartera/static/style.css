@@ -441,14 +441,43 @@ footer p {
 }
 
   /* Estilos específicos para la página "status.html" */
-.status-container {
+  .status-container {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    flex-direction: column;
+  }
+  
+  .status-container div {
+    display: flex;
+    justify-content: right;
+    margin-bottom: 10px; /* Añade un margen inferior entre los elementos */
+  }
+  .status-container h6 {
+    margin: 5px; /* Elimina el margen por defecto */
+  }
+  
+  .status-container p {
+    margin: 5px; /* Elimina el margen por defecto */
+  } 
+
+  
+
+#msg-error {
+    border: 2px solid rgb(255, 255, 255);
+    background-color: #4286f4dc;
+    border-radius: 5px;   
 }
 
-.status-container h6 {
-    margin-right: 10px;
-    margin-top: 0;
+
+.error {
+    color: rgb(255, 255, 255);
+    text-decoration: bold;
 }
+/* Estilo para valores positivos */
+.positive {
+    color: green;
+  }
+  
+  /* Estilo para valores negativos */
+  .negative {
+    color: red;
+  }

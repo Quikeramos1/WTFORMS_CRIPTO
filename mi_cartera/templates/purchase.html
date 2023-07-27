@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}Mi Cartera - Comprar/Vender/Intercambiar{% endblock %}
+
 <body>
     
-
     {% block page_content %}
     <form action="/purchase" method="post" class="purchase-form">
         {{ form.csrf_token }}
-        <!-- Contenedor para el campo "tipo_operacion" -->
+        
         <div class="type-operation-field">
             {{ form.tipo_operacion.label }}
             {{ form.tipo_operacion }}
         </div>
         
-        <!-- Contenedor para campos de criptomoneda -->
+        
         <div class="crypto-container">
             <div class="crypto-field">
                 {{ form.criptomoneda_origen.label }}
@@ -25,7 +25,7 @@
             </div>
         </div>
         
-        <!-- Contenedor para campos de cantidad -->
+        
         <div class="amount-container">
             <div class="amount-field">
                 {{ form.cantidad_origen.label }}
