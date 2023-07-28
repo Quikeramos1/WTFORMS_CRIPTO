@@ -6,7 +6,7 @@ Este proyecto es una aplicación web que te permite realizar operaciones de comp
 
 - [Características](#características)
 - [Capturas de Pantalla](#capturas-de-pantalla)
-- [Instalación](#instalación)
+- [Instalación](#instalación-del-proyecto)
 - [Uso](#uso)
 - [Tecnologías](#tecnologías)
 - [Contacto](#contacto)
