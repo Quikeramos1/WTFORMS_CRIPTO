@@ -32,22 +32,22 @@ Este proyecto es una aplicación web que te permite realizar operaciones de comp
 Para ejecutar Mi Cartera en tu máquina local, sigue estos pasos:
 
 1. Abre tu terminal y clona este repositorio en tu máquina local.
-1. 1. Accede a la ruta en la que quieras clonar el proyecto
-1. 2. git clone https://github.com/Quikeramos1/WTFORMS_CRIPTO (5.5MiB)
+2. Accede a la ruta en la que quieras clonar el proyecto
+3. git clone https://github.com/Quikeramos1/WTFORMS_CRIPTO (5.5MiB)
 
-2. Accede a la ruta en la que hayas clonado el proyecto y entra en /WTFORMS_CRIPTO
+4. Accede a la ruta en la que hayas clonado el proyecto y entra en /WTFORMS_CRIPTO
 
-3. Crea y activa un entorno virtual (opcional pero recomendado).
-3. 1. python3 -m venv venv
-3. 2. source venv/bin/activate
+5. Crea y activa un entorno virtual (opcional pero recomendado).
+6. python3 -m venv venv
+7. source venv/bin/activate
 
-4. Instala las dependencias del proyecto.
+8. Instala las dependencias del proyecto.
     pip install -r requirements.txt
 
-5. Configura las variables de entorno (Crea tu archivo .env basándote en .env_template).
+9. Configura las variables de entorno (Crea tu archivo .env basándote en .env_template).
     Utiliza el .env_template para crear el env debidamente informado.
 
-6. Ejecuta 'flask run' en tu terminal para levantar el servidor.
+10. Ejecuta 'flask run' en tu terminal para levantar el servidor.
 
 ## Uso
 
