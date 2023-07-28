@@ -1,6 +1,14 @@
 # Proyecto de aplicación web con Flask para gestionar Criptomonedas
 
 Este proyecto es una aplicación web que te permite realizar operaciones de compra, venta e intercambio de criptomonedas. Utiliza Flask como framework web y SQLite como base de datos para almacenar los movimientos realizados. Mi Cartera ayuda a los usuarios a gestionar su cartera de criptomonedas mediante el seguimiento de transacciones, proporcionando valores de criptomonedas en tiempo real y ofreciendo una visión general del rendimiento de sus inversiones.
+Esta aplicación web no cuenta con seguridad ni gestión de usuarios.
+Permite operar con las siguientes monedas y criptomonedas:
+- **_EUR_**, 		BTC,
+- ETH,		USDT,
+- BNB, 		XRP,
+- ADA, 		SOL,
+- DOT,		MATIC
+
 
 ## Tabla de Contenidos
 
@@ -17,6 +25,9 @@ Este proyecto es una aplicación web que te permite realizar operaciones de comp
 - Visualización de valores de criptomonedas en tiempo real.
 - Cálculo del valor actual de la cartera en Euros.
 - Seguimiento del rendimiento de las inversiones con cálculos de ganancias/pérdidas.
+- Se parte de infinitos euros 
+- Sólo se puede vender una criptomoneda si se dispone de saldo de la misma. Se ha comprado anteriormente y aún no se ha vendido.
+
 
 
 ## Capturas de Pantalla
