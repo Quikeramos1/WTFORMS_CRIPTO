@@ -29,18 +29,22 @@
         <div class="amount-container">
             <div class="amount-field">
                 {{ form.cantidad_origen.label }}
-                {{ form.cantidad_origen(class="small-input") }}
+                {{ form.cantidad_origen(class="small-input",readonly=form.cantidad_origen_readonly) }}
             </div>
             <div class="amount-field">
                 {{ form.cantidad_salida.label }}
                 {{ form.cantidad_salida(value=form.cantidad_salida.dada, readonly="readonly", class="small-input") }}
             </div>
         </div>
-        
-        <div>
-            {{ form.obtener_tipo_cambio(class="btn btn-primary") }}
-        </div>
-        
+       <div class="container">
+            <div class="boton_calc_reset">
+                {{ form.obtener_tipo_cambio(class="btn btn-primary") }}
+            </div>
+
+            <div class="boton_calc_reset">
+                {{ form.limpiar(class="btn btn-reset") }}
+            </div>
+        </div> 
         <div>
             {{ form.ejecutar(class="btn btn-success") }}
         </div>

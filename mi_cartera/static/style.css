@@ -195,42 +195,19 @@ footer p {
     justify-content: center; /* Centrar el contenido horizontalmente */
     margin-top: 10px; /* Espaciado hacia arriba */
 }
-
-
-.btn_calcular {
-    width: 100px; /* Tamaño del botón */
-    height: 40px;
-    background-color: #4286f4dc;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
-    display: flex;
+.boton_calc_reset {
+    display: inline-block;
+    margin: 10px;
+    flex: 1;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
    
-    
 }
-
-/* Estilos para el icono dentro del botón "calcular" */
-.calculate-icon {
-    font-size: 20px;
-}
-
-.btn_ejcutar {
-    background-color: #4286f4dc;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
+.container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-   
+}
     
-}/* Estilos para la navegación en todas las páginas */
+/* Estilos para la navegación en todas las páginas */
 nav {
     background-color: #4286f4dc;
     text-align: center;
@@ -440,24 +417,24 @@ footer p {
     margin-right: 10px;
 }
 
-  /* Estilos específicos para la página "status.html" */
-  .status-container {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .status-container div {
-    display: flex;
-    justify-content: right;
-    margin-bottom: 10px; /* Añade un margen inferior entre los elementos */
-  }
-  .status-container h6 {
-    margin: 5px; /* Elimina el margen por defecto */
-  }
-  
-  .status-container p {
-    margin: 5px; /* Elimina el margen por defecto */
-  } 
+/* Estilos específicos para la página "status.html" */
+.status-container {
+display: flex;
+flex-direction: column;
+}
+
+.status-container div {
+display: flex;
+justify-content: right;
+margin-bottom: 10px; /* Añade un margen inferior entre los elementos */
+}
+.status-container h6 {
+margin: 5px; /* Elimina el margen por defecto */
+}
+
+.status-container p {
+margin: 5px; /* Elimina el margen por defecto */
+} 
 
   
 

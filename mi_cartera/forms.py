@@ -32,6 +32,7 @@ class PurchaseForm(FlaskForm):
     
     cantidad_origen = DecimalField("Cantidad de Origen:",
             validators=[InputRequired()])
+    cantidad_origen_readonly = False
     
     criptomoneda_salida = SelectField("To:", 
             choices=[
@@ -50,6 +51,8 @@ class PurchaseForm(FlaskForm):
     obtener_tipo_cambio = SubmitField("Consultar") 
 
     ejecutar = SubmitField("Ejecutar")
+    limpiar = SubmitField("Limpiar")
+
 
 class Views(FlaskForm):
     
@@ -62,4 +65,5 @@ class Views(FlaskForm):
             ],
             validators=[InputRequired()])
     aceptar = SubmitField("aceptar")
+
     

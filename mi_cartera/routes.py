@@ -70,8 +70,11 @@ def purchase():
                 flash(error, 'error')
             return render_template("purchase.html", form=form)
         
+        if "limpiar" in request.form:
+            
+            return redirect("purchase")
         
-        if "obtener_tipo_cambio" in request.form: 
+        elif "obtener_tipo_cambio" in request.form: 
 
             movimiento = Movement(fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen,
                         criptomoneda_salida, cantidad_salida)
@@ -90,13 +93,16 @@ def purchase():
                     
                     cantidad_salida_calculada = cantidad_origen_decimal * exchange_rate_decimal
                     form.cantidad_salida.dada = cantidad_salida_calculada
-                    
+                    form.cantidad_origen_readonly = True 
                 else:
                     flash("No se pudo obtener el tipo de cambio.", 'error')
                        
             else:
                 for error in errores:
-                    flash(error, 'error')        
+                    flash(error, 'error')     
+
+        
+           
         elif 'ejecutar' in request.form:
             if cantidad_salida is None:
                 flash("Por favor, pulsa el botón 'Consultar' para que se rellene el campo 'Cantidad de salida'.", 'error')

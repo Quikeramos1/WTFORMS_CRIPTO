@@ -448,7 +448,7 @@ class Valida_transaccion:
         
 class CoinAPIHandler:
     def __init__(self):
-        self.coin_api_key = os.environ.get('FLASK_Coin_Api_key')
+        self.coin_api_key = os.environ.get('FLASK_COIN_API_KEY')
 
 
     def get_all_coins(self):
