@@ -1,6 +1,6 @@
 import sqlite3, os, requests
 from dotenv import load_dotenv
-from flask import flash
+from flask import flash, abort
 load_dotenv()
 
 #lo uso en la funcion get_all_coins y lo dejo accesible para añadir o quitar en el futuro
@@ -29,6 +29,22 @@ def crea_db_si_no_existe():
             return False    
     else:
         return True 
+    
+def try_db():
+    db_path = os.environ.get('FLASK_PATH_SQLITE')
+
+    if not os.path.exists(db_path):
+        print("La base de datos no existe en la ruta especificada.")
+        abort(500)
+
+    try:
+        # Intenta abrir la base de datos para comprobar si es accesible
+        with open(db_path, 'r') as f:
+            pass
+    except Exception as e:
+        print("Error al acceder a la base de datos:", str(e))
+        print("La aplicación no puede continuar debido a un problema con la base de datos.")
+        abort(500)
 
 class Movement:
     def __init__(self, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):

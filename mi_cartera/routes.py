@@ -1,5 +1,5 @@
 from mi_cartera import app
-from mi_cartera.models import MovementDAOsqlite, crea_db_si_no_existe, Movement, CoinAPIHandler, Valida_transaccion
+from mi_cartera.models import MovementDAOsqlite, try_db, Movement, CoinAPIHandler, Valida_transaccion
 from flask import render_template, request, redirect, flash
 import datetime as dt
 from mi_cartera.forms import PurchaseForm, Views
@@ -7,9 +7,17 @@ from decimal import Decimal
 
 dao = MovementDAOsqlite(app.config.get("PATH_SQLITE"))
 
+
 @app.before_request
 def before_request():
-    crea_db_si_no_existe()
+    try_db()
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return "Error interno del servidor. La aplicación no puede continuar debido a un problema con la base de datos, reinicia la aplicación.", 500
+
+
+
 
 def get_tipo_vista():
     form = Views()
@@ -160,3 +168,4 @@ def status():
                             valor_euros_wallet=valor_euros_wallet,
                             valor_actual=valor_actual,
                             resultado_inversion=resultado_inversion, iconos_criptomonedas=iconos_criptomonedas) 
+
