@@ -80,6 +80,7 @@ class Movement:
             errores.append("La moneda 'EUR' no puede ser vendida.")
         if self.tipo_operacion == "Compra" and self.criptomoneda_origen != "EUR":
             errores.append("Solo puedes realizar compras con Euros")
+        
 
         
         return errores
