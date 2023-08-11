@@ -5,11 +5,10 @@ load_dotenv()
 
 #lo uso en la funcion get_all_coins y lo dejo accesible para añadir o quitar en el futuro
 CURRENCIES = [ "ETH", "BNB", "ADA", "DOT", "BTC", "USDT", "XRP", "SOL", "MATIC"]
-
+db_path = os.environ.get('FLASK_PATH_SQLITE')
 
 
 def crea_db_si_no_existe():
-    db_path = os.environ.get('FLASK_PATH_SQLITE')
 
     if not os.path.exists(db_path):
         try:
@@ -31,21 +30,15 @@ def crea_db_si_no_existe():
         return True 
     
 def try_db():
-    db_path = os.environ.get('FLASK_PATH_SQLITE')
-
-    if not os.path.exists(db_path):
-        print("La base de datos no existe en la ruta especificada.")
-        abort(500)
-
+    
     try:
         # Intenta abrir la base de datos para comprobar si es accesible
         with open(db_path, 'r') as f:
             pass
     except Exception as e:
         print("Error al acceder a la base de datos:", str(e))
-        print("La aplicación no puede continuar debido a un problema con la base de datos.")
         abort(500)
-
+    
 class Movement:
     def __init__(self, fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
         self.fecha_actual = fecha_actual
@@ -97,10 +90,43 @@ class Movement:
 
 class MovementDAOsqlite:
     def __init__(self, db_path):
+        
         self.path = db_path
         self.coin_api_handler = CoinAPIHandler()
-     
 
+    @staticmethod
+    def is_database_writable():
+        try:
+            # Intenta abrir la base de datos
+            conn = sqlite3.connect(db_path)
+            cur = conn.cursor()
+
+            # Realiza una prueba de inserción y eliminación
+            test_query = """
+            CREATE TABLE IF NOT EXISTS test_table (
+                id INTEGER PRIMARY KEY,
+                name TEXT
+            )
+            """
+            cur.execute(test_query)
+
+            # Insertar un registro de prueba
+            cur.execute("INSERT INTO test_table (name) VALUES ('test')")
+            conn.commit()
+
+            # Eliminar el registro de prueba
+            cur.execute("DELETE FROM test_table WHERE name = 'test'")
+            conn.commit()
+
+            conn.close()
+
+            return True  # La base de datos es accesible y editable
+        except Exception as e:
+            print("Error al acceder a la base de datos:", str(e))
+            return False  # La base de datos no es accesible o no es editable
+
+     
+        
     def insert(self, movement):#almaceno operaciones con exito con esta funcion
         query = """
         INSERT INTO movements
@@ -124,9 +150,10 @@ class MovementDAOsqlite:
             conn.commit()
             conn.close()
             return None 
+        
         except sqlite3.Error as e:
-
             error_msg = f"Error al insertar el movimiento en la base de datos: {str(e)}"
+            
             return error_msg
     
     def get_all(self, tipo_operacion=None):#Devuelve listado de todos los movimientos
@@ -465,6 +492,9 @@ class Valida_transaccion:
 class CoinAPIHandler:
     def __init__(self):
         self.coin_api_key = os.environ.get('FLASK_COIN_API_KEY')
+        
+        
+        
 
 
     def get_all_coins(self):
@@ -484,13 +514,26 @@ class CoinAPIHandler:
                             exchange_rates_to_eur[symbol] = rate_data.get("rate")
 
                     return exchange_rates_to_eur
+                else:
+                    flash('Sin datos disponibles para la solicitud')
+                    return None
+            elif response.status_code == 400:
+                flash('Error en la petición')
+            elif response.status_code == 401:
+                flash('Clave API incorrecta')
+            elif response.status_code == 403:
+                flash('Tu API KEY no tiene suficientes privilegios para acceder a este recurso')
+            elif response.status_code == 429:
+                flash('Excedido el límite de peticiones diarias con esta API KEY')
+            elif response.status_code == 550:
+                flash('Sin datos sobre esta petición')
             else:
-                print(f'Error en la solicitud: {response.status_code}')
-                return None
-        except requests.exceptions.RequestException as e:
-            print(f'Error en la solicitud: {str(e)}')
+                flash('Errores varios con la API')
             return None
-        
+        except requests.exceptions.RequestException as e:
+            flash(f"Error en la solicitud: {str(e)}")
+            return None
+    
     def get_exchange_rate(self, criptomoneda_origen, criptomoneda_salida):
         url = f"https://rest.coinapi.io/v1/exchangerate/{criptomoneda_origen}/{criptomoneda_salida}?apikey={self.coin_api_key}"
         try:
@@ -498,28 +541,52 @@ class CoinAPIHandler:
             data = response.json()
             if response.status_code == 200:
                 return data['rate']
+            elif response.status_code == 400:
+                flash('Error en la petición')
+            elif response.status_code == 401:
+                flash('Clave API incorrecta')
+            elif response.status_code == 403:
+                flash('Tu API KEY no tiene suficientes privilegios para acceder a este recurso')
+            elif response.status_code == 429:
+                flash('Excedido el límite de peticiones diarias con esta API KEY')
+            elif response.status_code == 550:
+                flash('Sin datos sobre esta petición')
             else:
-                return None
-        except requests.exceptions.RequestException as e:
-            print(f"Error al obtener los datos: {str(e)}")
+                flash('Errores varios con la API')
             return None
+        except requests.exceptions.RequestException as e:
+            flash(f"Error al obtener los datos: {str(e)}")
+            return None
+        
+    
 
     def process_transaction(self, tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida):
         exchange_rate = self.get_exchange_rate(criptomoneda_origen, criptomoneda_salida)
-        if cantidad_salida is None:
-            return False, "Debes pulsar el botón 'Consultar' para finalizar correctamente la operación."
         
-        if exchange_rate is None:
-            return False, "Ha habido un error al procesar la operación."
 
-        if tipo_operacion == "Compra":
-                return True, "Compra realizada exitosamente."
+        if cantidad_salida is None:
+                flash("Debes pulsar el botón 'Consultar' para finalizar correctamente la operación.")
+                return False,""
+
+
+        elif exchange_rate is None:
+            flash("Ha habido un error al procesar la operación.")
+            return False,""
+        
+    
+        elif tipo_operacion == "Compra":
+                    # Aquí va tu lógica para realizar la compra
+                    return True, "Compra realizada exitosamente."
 
         elif tipo_operacion == "Venta":
-                return True, "Venta realizada exitosamente."
+            # Aquí va tu lógica para realizar la venta
+            return True, "Venta realizada exitosamente."
 
         elif tipo_operacion == "Intercambio":
+            # Aquí va tu lógica para realizar el intercambio
             return True, "Intercambio realizado exitosamente."
+      
+
 
     def obtener_icono_criptomoneda(self, criptomoneda):
         

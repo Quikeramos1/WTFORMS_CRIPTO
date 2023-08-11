@@ -17,34 +17,17 @@ def internal_server_error(e):
     return "Error interno del servidor. La aplicación no puede continuar debido a un problema con la base de datos, reinicia la aplicación.", 500
 
 
-
-
-def get_tipo_vista():
-    form = Views()
-    if request.method == "POST" and form.validate_on_submit():
-        return form.tipo_vista.data
-    else:
-        return "Todos"
-
-
 @app.route("/", methods=["POST", "GET"])
 def index():
-    tipo_vista = get_tipo_vista()
     form = Views()  
     
     try:
-        if tipo_vista == "Venta":
-            movements = dao.get_all_sales()
-        elif tipo_vista == "Compra":
-            movements = dao.get_all_purchases()
-        elif tipo_vista == "Intercambio":
-            movements = dao.get_all_trading()
-        else:
-            movements = dao.get_all()
-        return render_template("index.html", form=form, the_movements=movements, title="Todos", tipo_vista=tipo_vista)
+        movements = dao.get_all()  # Obtener todos los movimientos
+
+        return render_template("index.html", form=form, the_movements=movements, title="Todos")
     except ValueError as e:
         flash(str(e), "error")
-        return render_template("index.html", form=form, the_movements=movements, title="Todos", tipo_vista=tipo_vista)
+        return render_template("index.html", form=form, the_movements=movements, title="Todos")
     
 
 @app.route("/purchase", methods=["GET", "POST"])
@@ -58,7 +41,7 @@ def purchase():
 
         return render_template("purchase.html", form=form)
     
-    else:
+    elif request.method =="POST":
         fecha_hora_actual = dt.datetime.now()
         fecha_actual = fecha_hora_actual.strftime('%Y-%m-%d')
         hora_actual = fecha_hora_actual.strftime('%H:%M:%S')
@@ -88,32 +71,38 @@ def purchase():
                         criptomoneda_salida, cantidad_salida)
         
             errores = movimiento.validate()
+            if MovementDAOsqlite.is_database_writable() == False:
+                flash("La base de datos está bloqueada para escribir, comprueba los permisos o reinicia la aplicación para solucionar el problema.")
             
-            
-            if not errores:
-                exchange_rate = coin_api_handler.get_exchange_rate(criptomoneda_origen, criptomoneda_salida)
-                
-                if exchange_rate is not None:
-                        
-                    cantidad_origen_decimal = Decimal(cantidad_origen)  
-                    
-                    exchange_rate_decimal = Decimal(exchange_rate)  
-                    
-                    cantidad_salida_calculada = cantidad_origen_decimal * exchange_rate_decimal
-                    form.cantidad_salida.dada = cantidad_salida_calculada
-                    form.cantidad_origen_readonly = True 
-                else:
-                    flash("No se pudo obtener el tipo de cambio.", 'error')
-                       
             else:
-                for error in errores:
-                    flash(error, 'error')     
+
+            
+                if not errores:
+                    exchange_rate = coin_api_handler.get_exchange_rate(criptomoneda_origen, criptomoneda_salida)
+                    
+                    if exchange_rate is not None:
+                            
+                        cantidad_origen_decimal = Decimal(cantidad_origen)  
+                        
+                        exchange_rate_decimal = Decimal(exchange_rate)  
+                        
+                        cantidad_salida_calculada = cantidad_origen_decimal * exchange_rate_decimal
+                        form.cantidad_salida.dada = cantidad_salida_calculada
+                        form.cantidad_origen_readonly = True 
+                    else:
+                        flash(" ,No se pudo obtener el tipo de cambio.", 'error')
+                        
+                else:
+                    for error in errores:
+                        flash(error, 'error')     
 
         
            
         elif 'ejecutar' in request.form:
             if cantidad_salida is None:
                 flash("Por favor, pulsa el botón 'Consultar' para que se rellene el campo 'Cantidad de salida'.", 'error')
+            elif MovementDAOsqlite.is_database_writable() == False:
+                flash("La base de datos está bloqueada para escribir, comprueba los permisos o reinicia la aplicación para solucionar el problema.")    
             else:
                 movimiento = Movement(fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen,
                             criptomoneda_salida, cantidad_salida)
@@ -127,18 +116,22 @@ def purchase():
                     elif tipo_operacion == "Venta":
                         cantidad_origen = -cantidad_origen
 
-                success, message = coin_api_handler.process_transaction(tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida)
-
-                if success:
-                    dao.insert(Movement(fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen,
-                            criptomoneda_salida, cantidad_salida))
-                    message = "La transacción se ha procesado correctamente."
-                
-                flash(message)
-                return redirect("/")
+                    success, message = coin_api_handler.process_transaction(tipo_operacion, criptomoneda_origen, cantidad_origen, criptomoneda_salida, cantidad_salida)
+                    
+                    
+                    if success:
+                        dao.insert(Movement(fecha_actual, hora_actual, tipo_operacion, criptomoneda_origen, cantidad_origen,
+                                criptomoneda_salida, cantidad_salida))
+                        flash(message, 'success')
+                        return redirect("/")
+                    else:
+                        flash(message, 'error')
+                        
+                            
         else:
             for error in errores:
                 flash(error, 'error')
+        
     return render_template("purchase.html", form=form)
    
 
